@@ -1,0 +1,24 @@
+plugins {
+    id 'com.android.application'
+}
+
+def buildCode = providers.gradleProperty('appVersionCode').getOrElse('1').toInteger()
+def buildName = providers.gradleProperty('appVersionName').getOrElse('0.1.0')
+
+android {
+    namespace 'com.klipyza.latearrival'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.klipyza.latearrival'
+        minSdk 23
+        targetSdk 35
+        versionCode buildCode
+        versionName buildName
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
