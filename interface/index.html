@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#080707">
   <meta name="description" content="LATE ARRIVAL — a first-person horror game menu by KLIPYZA.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png" type="image/png">
   <title>LATE ARRIVAL — KLIPYZA</title>
   <style>
     :root{color-scheme:dark;--blood:#8f171e;--paper:#d8d0c4;--muted:#8b8580;--quality:1;--ui:rgba(10,9,9,.74)}
@@ -63,6 +68,11 @@
     .panel-actions{display:flex;justify-content:flex-end;margin-top:30px;padding-top:20px;border-top:1px solid rgba(180,165,150,.14)}
     .small-button{min-width:130px;padding:12px 18px;border:1px solid rgba(157,32,39,.72);background:#4b1014;color:#eee5dc;text-transform:uppercase;letter-spacing:.2em;font-size:.63rem;cursor:pointer}
     .small-button:hover{background:#74151c}
+    .app-copy{margin:-9px 0 20px;color:#aaa095;font-size:.73rem;line-height:1.7;letter-spacing:.035em}
+    .app-options{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .app-options .small-button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:47px;text-align:center;text-decoration:none}
+    .app-note{min-height:2.8em;margin:17px 0 0;color:#81776e;font-size:.62rem;line-height:1.7;letter-spacing:.07em}
+    .menu-actions .menu-button:last-child .arrow{font-size:1rem}
     .launch-layer{position:fixed;z-index:7;inset:0;display:grid;place-items:center;padding:24px;background:rgba(3,3,3,.88);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .45s,visibility .45s}
     .launch-layer.open{opacity:1;visibility:visible}
     .launch-card{text-align:center;max-width:500px;transform:translateY(10px);transition:transform .45s}
@@ -75,9 +85,10 @@
     .quality-low .grain{opacity:.055}
     @media(max-width:700px){.shade{background:linear-gradient(90deg,rgba(5,5,5,.82),rgba(5,5,5,.38)),linear-gradient(0deg,rgba(0,0,0,.8),transparent 54%,rgba(0,0,0,.28));box-shadow:inset 0 0 95px 18px #000}.corner-id{top:22px}.menu{left:7vw;top:47%;width:86vw;transform:translateY(-42%)}@keyframes menu-in{from{opacity:0;transform:translateY(calc(-42% + 16px))}to{opacity:1;transform:translateY(-42%)}}h1{font-size:clamp(3.1rem,15vw,6.2rem)}.menu-actions{margin-top:34px;width:min(285px,90%)}.menu-button{min-height:52px}.bottom-note{bottom:18px}.crosshair{display:none}}
     @media(max-height:620px) and (min-width:701px){.menu{top:53%;transform:translateY(-50%)}.menu-actions{margin-top:26px}.title-rule{margin-top:21px}.eyebrow{margin-bottom:13px}}
+    @media(max-height:500px){.menu{top:51%;width:min(78vw,950px)}.menu-actions{display:flex;gap:10px;width:min(620px,88%);margin-top:18px}.menu-button{flex:1;min-width:0;min-height:45px;padding:0 12px;font-size:.58rem}h1{font-size:clamp(2.8rem,10vh,4.5rem)}.title-rule{margin:19px 0 8px}.eyebrow{margin-bottom:10px}.bottom-note{bottom:12px}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="/interface/three.min.js"></script>
 </head>
 <body>
   <canvas class="world" id="world" aria-hidden="true"></canvas>
@@ -92,6 +103,7 @@
     <nav class="menu-actions" aria-label="Main menu">
       <button class="menu-button" id="playButton" type="button"><span>Play Game</span><span class="arrow" aria-hidden="true">↗</span></button>
       <button class="menu-button" id="configButton" type="button"><span>Configure</span><span class="arrow" aria-hidden="true">+</span></button>
+      <button class="menu-button" id="appButton" type="button"><span>Get the App</span><span class="arrow" aria-hidden="true">↓</span></button>
     </nav>
   </main>
   <div class="bottom-note">Chapter 01 <span>—</span> What is wrong?</div>
@@ -112,6 +124,20 @@
     </div>
   </section>
 
+  <section class="modal-layer" id="appLayer" role="dialog" aria-modal="true" aria-labelledby="appTitle" aria-hidden="true">
+    <div class="panel">
+      <button class="close-panel" id="closeApp" type="button" aria-label="Close app options">×</button>
+      <p class="panel-kicker">Take the nightmare with you</p>
+      <h2 id="appTitle">Get the App</h2>
+      <p class="app-copy">Install LATE ARRIVAL on Android. Both options open in landscape; the installed app follows the latest Vercel version.</p>
+      <div class="app-options">
+        <button class="small-button" id="pwaInstallButton" type="button">Install PWA</button>
+        <a class="small-button" id="apkDownloadButton" href="#" hidden>Download APK</a>
+      </div>
+      <p class="app-note" id="installNote" aria-live="polite">PWA install works in a supported browser. The APK is prepared automatically from the latest game version.</p>
+    </div>
+  </section>
+
   <section class="launch-layer" id="launchLayer" role="dialog" aria-modal="true" aria-labelledby="launchTitle" aria-hidden="true">
     <div class="launch-card"><p class="eyebrow">The arrival begins</p><h2 id="launchTitle">CHAPTER 1</h2><h3>What is wrong?</h3><p>The first chapter is still being created.<br>For now, the hallway is all that remains.</p><button class="small-button" id="backButton" type="button">Back to menu</button></div>
   </section>
@@ -119,7 +145,7 @@
   <script>
     (()=>{
       const $=id=>document.getElementById(id);
-      const splash=$('brandSplash'),settingsLayer=$('settingsLayer'),launchLayer=$('launchLayer');
+      const splash=$('brandSplash'),settingsLayer=$('settingsLayer'),appLayer=$('appLayer'),launchLayer=$('launchLayer');
       const defaults={volume:45,music:true,quality:'high',sway:true};
       let prefs=defaults;
       try{prefs={...defaults,...JSON.parse(localStorage.getItem('late-arrival-settings')||'{}')}}catch(_){prefs={...defaults}}
@@ -227,10 +253,22 @@
       function closeLayer(layer){layer.classList.remove('open');layer.setAttribute('aria-hidden','true')}
       $('playButton').addEventListener('click',()=>{startMusic();openLayer(launchLayer);$('backButton').focus()});
       $('configButton').addEventListener('click',()=>{startMusic();openLayer(settingsLayer);$('closeSettings').focus()});
+      $('appButton').addEventListener('click',()=>{startMusic();openLayer(appLayer);$('pwaInstallButton').focus()});
       $('closeSettings').addEventListener('click',()=>closeLayer(settingsLayer));$('doneSettings').addEventListener('click',()=>closeLayer(settingsLayer));
+      $('closeApp').addEventListener('click',()=>closeLayer(appLayer));
       $('backButton').addEventListener('click',()=>closeLayer(launchLayer));
       settingsLayer.addEventListener('click',e=>{if(e.target===settingsLayer)closeLayer(settingsLayer)});
-      addEventListener('keydown',e=>{if(e.key==='Escape'){closeLayer(settingsLayer);closeLayer(launchLayer)}});
+      appLayer.addEventListener('click',e=>{if(e.target===appLayer)closeLayer(appLayer)});
+      let deferredInstallPrompt=null;
+      window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e});
+      window.addEventListener('appinstalled',()=>{$('installNote').textContent='LATE ARRIVAL is installed. Turn your device sideways to enter the hallway.';deferredInstallPrompt=null});
+      $('pwaInstallButton').addEventListener('click',async()=>{
+        const note=$('installNote');
+        if(deferredInstallPrompt){const prompt=deferredInstallPrompt;deferredInstallPrompt=null;await prompt.prompt();const choice=await prompt.userChoice;note.textContent=choice.outcome==='accepted'?'Install started. The game opens in landscape.':'Install cancelled. You can try again from this menu.';return}
+        if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true){note.textContent='LATE ARRIVAL is already installed.';return}
+        note.textContent=/Android/i.test(navigator.userAgent)?'In Android Chrome, open the browser menu and choose Install app or Add to Home screen. The PWA opens in landscape.':'Use your browser menu or install icon to add LATE ARRIVAL to your device.';
+      });
+      addEventListener('keydown',e=>{if(e.key==='Escape'){closeLayer(settingsLayer);closeLayer(appLayer);closeLayer(launchLayer)}});
       vol.addEventListener('input',()=>{prefs.volume=Number(vol.value);volOut.value=vol.value+'%';applyVolume();savePrefs()});
       musicToggle.addEventListener('change',()=>{prefs.music=musicToggle.checked;if(prefs.music){if(!audioStarted)startMusic();applyVolume()}else stopMusic();savePrefs()});
       qualitySelect.addEventListener('change',()=>{quality=qualitySelect.value;prefs.quality=quality;document.body.classList.toggle('quality-low',quality==='low');if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio,quality==='high'?1.65:1));renderer.setSize(innerWidth,innerHeight,false)}savePrefs()});
@@ -239,6 +277,9 @@
       document.addEventListener('pointerdown',()=>{if(prefs.music)startMusic()},{once:true,passive:true});
       initWorld();
     })();
+  </script>
+  <script>
+    if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('/service-worker.js',{scope:'/'}).catch(()=>{});
   </script>
 </body>
 </html>
