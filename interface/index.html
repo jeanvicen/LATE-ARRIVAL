@@ -148,8 +148,9 @@
       }
 
       function makeHand(){
-        hand=new THREE.Group();hand.position.set(Math.min(.82,Math.tan(31*Math.PI/180)*camera.aspect*1.3),.4,-1.42);hand.rotation.z=-.08;handBaseY=hand.position.y;scene.add(hand);
-        const skin=material(0x481116,.93),skinLight=material(0x73191d,.9),wound=material(0x110b0b,1),nail=material(0x171112,.88);
+        hand=new THREE.Group();hand.position.set(Math.min(.82,Math.tan(31*Math.PI/180)*camera.aspect*1.3),.72,-1.65);hand.rotation.z=-.08;handBaseY=hand.position.y;scene.add(hand);
+        const handLight=new THREE.PointLight(0x8e161e,2.3,3.2,2);handLight.position.set(hand.position.x-.08,1.34,-.95);scene.add(handLight);
+        const skin=material(0x64151c,.93),skinLight=material(0xa02a31,.9),wound=material(0x090707,1),nail=material(0x171112,.88);
         segment(hand,[.34,-1.35,0],[.05,.13,.03],.16,.105,skin);
         const palm=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),skin);palm.position.set(0,.35,.05);palm.scale.set(.72,1.08,.39);hand.add(palm);
         const knuckles=[[-.105,.54],[-.025,.59],[.06,.57],[.14,.49]];
