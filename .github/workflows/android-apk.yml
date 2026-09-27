@@ -1,0 +1,70 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "interface/**"
+      - "android-app/**"
+      - "manifest.webmanifest"
+      - "service-worker.js"
+      - "icons/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: late-arrival-android-apk
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools, platforms;android-35, build-tools;35.0.0"
+
+      - name: Build installable debug APK
+        run: >-
+          gradle --no-daemon -p android-app
+          -PappVersionCode=${{ github.run_number }}
+          -PappVersionName=0.1.${{ github.run_number }}
+          assembleDebug
+
+      - name: Prepare download
+        run: cp android-app/app/build/outputs/apk/debug/app-debug.apk late-arrival.apk
+
+      - name: Publish the latest APK
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: android-latest
+          target_commitish: ${{ github.sha }}
+          name: LATE ARRIVAL — Android APK
+          body: |
+            Latest installable development APK for LATE ARRIVAL.
+            The app opens the current live game menu from Vercel and locks the screen to landscape.
+            This is a sideloadable debug build, not a Play Store release.
+          files: late-arrival.apk
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
